@@ -1,24 +1,32 @@
-import React, { createElement, useState } from "react"
+import React, { useState } from "react"
 import Task from "./Task"
 
+type TaskList = {
+    todo: string,
+    done: number,
+    item: number
+}
+
 const Todo = () => {
-    const [task, setTask] = useState<string[]>([])
+    const [task, setTask] = useState<TaskList[]>([])
     const [current, setCurrent] = useState<string>('')
+    const [doneTask, setDoneTask] = useState<TaskList[]>([])
 
     const addTask = (tsk: string) => {
         if(tsk === '') {
             alert('The Task Box CANNOT Be Empty!')
         } else {
-            const newTask = [tsk, ...task]
+            const newItem = new Date()
+            const newTask = [{todo: tsk, done: 0, item: newItem.getTime()}, ...task]
             setTask(newTask)
         }
     }
 
-    const createNewTask = (t: string[]) => {
+    const createNewTask = (t: TaskList[]) => {
         if(t === []) {
             return ''
         } else {
-            return t.map(x => <Task todo = {x} done = {0}></Task>)
+            return t.map(x => <Task todo = {x.todo} done = {x.done} item = {x.item} doneFn = {done} delFn = {del}></Task>)
         }
     }
 
@@ -41,6 +49,24 @@ const Todo = () => {
         }
     }
 
+    const del = (item: number) => {
+        const newTask = task.filter(x => x.item !== item)
+        setTask(newTask)
+    }
+
+    const done = (item: number) => {
+        const newItem = new Date()
+        for(let i = 0; i < task.length; i++) {
+            if(task[i].item === item) {
+                const fin = task[i].todo
+                const newDoneTask = [{todo: fin, done: 1, item: newItem.getTime()}, ...doneTask]
+                setDoneTask(newDoneTask)
+                const newTask = task.filter(x => x.item !== item)
+                setTask(newTask)
+            }
+        }
+    }
+
     return (
         <div id = 'todoList' className='mx-auto max-w-4xl'>
             <div id = 'todo' className='flex space-x-1'>
@@ -48,6 +74,7 @@ const Todo = () => {
                 <button className='border border-gray-400 w-8 font-bold' onClick = {addBtn}>+</button>
             </div>
             {createNewTask(task)}
+            {doneTask.map(x => <Task todo = {x.todo} done = {x.done} item = {x.item} doneFn = {() => null} delFn = {() => null}></Task>)}
         </div>
     )
 }

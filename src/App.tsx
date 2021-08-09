@@ -11,7 +11,7 @@ function App() {
       <Todo></Todo>
       <Footer></Footer>
     </div>
-  );
+  )
 }
 
 export default App;
